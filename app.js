@@ -3,6 +3,8 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const app = $('#app');
 const picker = $('#media-picker');
 const PROFILE_SEED_REVISION = 3;
+const RESULTS_SEED_REVISION = 4;
+const FEES_SEED_REVISION = 4;
 const ARYAN_PROFILE = {
   name: 'ARYAN THAKUR', roll: '23131010559', admission: '23SCSE1012155', section: 'Section-24', email: 'aryanthakur15708@gmail.com',
   father: 'SANTOSH THAKUR', mother: 'JYOTI THAKUR', dob: '17 March 2006', phone: '7011408281',
@@ -30,17 +32,19 @@ const DEFAULT = {
     { date: '2026-09-13', start: '15:30', end: '16:20', subject: 'Generative and Explainable AI (PP)', code: 'R1UD702B', teacher: 'Chouhan Mahesh Kumar' },
     { date: '2026-09-13', start: '16:20', end: '17:10', subject: 'Generative and Explainable AI (PP)', code: 'R1UD702B', teacher: 'Chouhan Mahesh Kumar' }
   ],
-  fees: { tuition: 149000, exam: 15000, paid: 0 },
+  // The account is settled; the individual heads remain available in the editable UI.
+  fees: { tuition: 149000, exam: 15000, paid: 164000, seedRevision: FEES_SEED_REVISION },
   receipts: [],
+  resultsRevision: RESULTS_SEED_REVISION,
   results: [
-    { semester: 1, session: 'Consolidated', sgpa: '8.14', cgpa: '8.14', status: 'PASS', courses: [{code:'R1UC101', name:'Programming for Problem Solving', grade:'A', credit:'4'}, {code:'R1UC102', name:'Mathematics I', grade:'A+', credit:'4'}, {code:'R1UC103', name:'Engineering Physics', grade:'B+', credit:'3'}] },
-    { semester: 2, session: 'Consolidated', sgpa: '8.32', cgpa: '8.23', status: 'PASS', courses: [{code:'R1UC201', name:'Data Structures', grade:'A', credit:'4'}, {code:'R1UC202', name:'Mathematics II', grade:'A+', credit:'4'}, {code:'R1UC203', name:'Digital Electronics', grade:'B+', credit:'3'}] },
-    { semester: 3, session: 'Consolidated', sgpa: '8.46', cgpa: '8.31', status: 'PASS', courses: [{code:'R1UC301', name:'Database Management Systems', grade:'A', credit:'4'}, {code:'R1UC302', name:'Operating Systems', grade:'A', credit:'4'}, {code:'R1UC303', name:'Discrete Mathematics', grade:'B+', credit:'3'}] },
-    { semester: 4, session: 'Consolidated', sgpa: '8.58', cgpa: '8.38', status: 'PASS', courses: [{code:'R1UC401', name:'Computer Networks', grade:'A+', credit:'4'}, {code:'R1UC402', name:'Software Engineering', grade:'A', credit:'4'}, {code:'R1UC403', name:'Theory of Computation', grade:'B+', credit:'3'}] },
-    { semester: 5, session: 'Consolidated', sgpa: '8.63', cgpa: '8.43', status: 'PASS', courses: [{code:'R1UC501', name:'Machine Learning', grade:'A', credit:'4'}, {code:'R1UC502', name:'Cloud Computing', grade:'A+', credit:'4'}, {code:'R1UC503', name:'Compiler Design', grade:'B+', credit:'3'}] },
-    { semester: 6, session: 'Consolidated', sgpa: '8.71', cgpa: '8.48', status: 'PASS', courses: [{code:'R1UC601', name:'Artificial Intelligence', grade:'A+', credit:'4'}, {code:'R1UC602', name:'Web Technologies', grade:'A', credit:'4'}, {code:'R1UC603', name:'Big Data Analytics', grade:'A', credit:'3'}] },
-    { semester: 7, session: 'Consolidated', sgpa: '8.76', cgpa: '8.52', status: 'PASS', courses: [{code:'R1UC701T', name:'Research Methodology and IPR', grade:'A', credit:'3'}, {code:'R1UD702B', name:'Generative and Explainable AI', grade:'A+', credit:'4'}, {code:'R1UR701R', name:'Internship Mooc NPTEL', grade:'A', credit:'2'}] },
-    { semester: 8, session: 'Consolidated', sgpa: '', cgpa: '', status: 'RESULT PENDING', courses: [] }
+    { semester: 1, session: 'Regular', sgpa: '8.39', cgpa: '8.39', status: 'PASS', courses: [{code:'C1UB120T',name:'Environmental Impact Analysis',credit:'0',grade:'A'}, {code:'C1UC122B',name:'Engineering Mathematics-I',credit:'4',grade:'A'}, {code:'C1UD124B',name:'Semiconductor and Optoelectronic Devices',credit:'4',grade:'A'}, {code:'E2UC102C',name:'Programming for Problem Solving',credit:'4',grade:'A+'}, {code:'G2UC101B',name:'Introduction of Digital System',credit:'3',grade:'A'}, {code:'O1UA104B',name:'Communication Skills for Engineers',credit:'3',grade:'A+'}] },
+    { semester: 2, session: 'Regular', sgpa: '8.09', cgpa: '8.22', status: 'PASS', courses: [{code:'C1UB129T',name:'Chemical and Biological Materials',credit:'3',grade:'A'}, {code:'C1UC222B',name:'Engineering Mathematics-II',credit:'4',grade:'A'}, {code:'C1UC224T',name:'Discrete Mathematics',credit:'3',grade:'B+'}, {code:'E2UC201C',name:'OOPS',credit:'5',grade:'A+'}, {code:'G2UA120B',name:'Basic Electrical and Electronics Engg.',credit:'4',grade:'A'}, {code:'G3UB101B',name:'Engineering Design and Prototyping',credit:'4',grade:'A'}, {code:'L1UB120T',name:'YOGA',credit:'0',grade:'O'}] },
+    { semester: 3, session: 'Regular', sgpa: '7.91', cgpa: '8.11', status: 'PASS', courses: [{code:'C1UC322T',name:'Probability and Statistics',credit:'3',grade:'A'}, {code:'E1UA307C',name:'Java Programming',credit:'5',grade:'A'}, {code:'E2UC301T',name:'Computer Organisation and Architecture',credit:'4',grade:'A'}, {code:'E2UC302B',name:'Data Base Management System',credit:'4',grade:'A'}, {code:'O1UA301L',name:'Communication Competency and Aptitude Building - I',credit:'2',grade:'A'}, {code:'R1UC301L',name:'Design Thinking',credit:'1',grade:'O'}, {code:'R1UC303B',name:'Data Structures using JAVA',credit:'4',grade:'B+'}] },
+    { semester: 4, session: 'Regular', sgpa: '7.91', cgpa: '8.06', status: 'PASS', courses: [{code:'O1UA422L',name:'Verbal and Quantitative Reasoning - I',credit:'2',grade:'B+'}, {code:'R1UC403B',name:'Operating System',credit:'4',grade:'B+'}, {code:'R1UC406B',name:'Data Communication and Networking',credit:'4',grade:'A'}, {code:'R1UC407B',name:'Design and Analysis of Algorithm',credit:'5',grade:'A'}, {code:'R1UC408B',name:'Computer Graphics',credit:'4',grade:'A+'}, {code:'R1UC409T',name:'Understanding Harmony and Ethical Human Conduct',credit:'1',grade:'A'}, {code:'R1UC413T',name:'Renewable Energy',credit:'3',grade:'A'}] },
+    { semester: 5, session: 'Regular', sgpa: '7.57', cgpa: '7.95', status: 'PASS', courses: [{code:'K1UC523L',name:'Communication Competency and Aptitude Building - III',credit:'2',grade:'B'}, {code:'R1UC501T',name:'Theory of Computation',credit:'3',grade:'A'}, {code:'R1UC507T',name:'Distributed Computing',credit:'3',grade:'A'}, {code:'R1UC511R',name:'Internship Summer',credit:'2',grade:'A'}, {code:'R1UC525B',name:'Machine Learning',credit:'4',grade:'B+'}, {code:'R1UC531B',name:'Advanced Data Structures and Algorithms',credit:'5',grade:'B'}, {code:'R1UC534B',name:'Frontend Development',credit:'4',grade:'O'}] },
+    { semester: 6, session: 'Regular', sgpa: '7.22', cgpa: '7.83', status: 'PASS', courses: [{code:'O1UA603L',name:'Professional Readiness',credit:'2',grade:'B+'}, {code:'R1UC601B',name:'Advanced Algorithmic Problem Solving',credit:'4',grade:'B+'}, {code:'R1UC626C',name:'Web Technology',credit:'5',grade:'B'}, {code:'R1UC647T',name:'Compiler Design',credit:'3',grade:'A+'}, {code:'R1UC649B',name:'Cyber Security',credit:'4',grade:'A'}, {code:'R1UC651B',name:'Software Engineering',credit:'5',grade:'B+'}] },
+    { semester: 7, session: 'Regular', sgpa: '', cgpa: '', status: 'NOT PUBLISHED', courses: [] },
+    { semester: 8, session: 'Regular', sgpa: '', cgpa: '', status: 'NOT PUBLISHED', courses: [] }
   ],
   records: { Notifications: [], Holidays: [], Enrollment: [], Feedback: [], Undertaking: [], Grievance: [], Mentorship: [], 'NEFT Form': [], Performance: [], 'Request Center': [], 'Admit Card': [], 'Exam Form': [], 'Report Card': [], 'Seating Plan': [], 'Upload Documents': [] },
   notifications: [
@@ -54,7 +58,7 @@ let current = 'login';
 let activeFee = 'All Fees';
 let currentModule = '';
 let selectedScheduleDate = new Date(2026, 8, 13, 12);
-let selectedResultSemester = 7;
+let selectedResultSemester = 1;
 
 function loadState() {
   try {
@@ -66,7 +70,10 @@ function mergeDefaults(saved) {
  const savedClasses = saved.timetable || DEFAULT.timetable;
  const profile = { ...DEFAULT.profile, ...(saved.profile || {}) };
  if ((profile.seedRevision || 0) < PROFILE_SEED_REVISION) Object.assign(profile, ARYAN_PROFILE);
- return { ...structuredClone(DEFAULT), ...saved, profile, fees: { ...DEFAULT.fees, ...(saved.fees || {}) }, receipts: saved.receipts || [], results: saved.results || structuredClone(DEFAULT.results), records: { ...DEFAULT.records, ...(saved.records || {}) }, timetable: savedClasses.map(item => ({ ...item, date: item.date || '2026-09-13' })) };
+ const fees = { ...DEFAULT.fees, ...(saved.fees || {}) };
+ if ((fees.seedRevision || 0) < FEES_SEED_REVISION) Object.assign(fees, structuredClone(DEFAULT.fees));
+ const results = (saved.resultsRevision || 0) < RESULTS_SEED_REVISION ? structuredClone(DEFAULT.results) : (saved.results || structuredClone(DEFAULT.results));
+ return { ...structuredClone(DEFAULT), ...saved, profile, fees, receipts: saved.receipts || [], resultsRevision: RESULTS_SEED_REVISION, results, records: { ...DEFAULT.records, ...(saved.records || {}) }, timetable: savedClasses.map(item => ({ ...item, date: item.date || '2026-09-13' })) };
 }
 function save() { localStorage.setItem('ems-demo-data', JSON.stringify(state)); }
 function escapeHtml(value = '') { return String(value).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#039;', '"':'&quot;' }[c])); }
@@ -190,8 +197,9 @@ function feeLedgerPage() {
 }
 function reportCardsPage() {
  const result = state.results.find(item => Number(item.semester) === Number(selectedResultSemester)) || state.results[0];
+ const published = result.status !== 'NOT PUBLISHED';
  const courses = result.courses.length ? result.courses.map(course => `<tr><td>${escapeHtml(course.code)}</td><td>${escapeHtml(course.name)}</td><td>${escapeHtml(course.credit)}</td><td><b>${escapeHtml(course.grade)}</b></td></tr>`).join('') : `<tr><td colspan="4" class="pending-cell">Results have not been published for this semester.</td></tr>`;
- return `<section class="shell report-screen">${topbar('Report Card',{light:true})}<section class="hero-blue"><h1>Grade Card List</h1></section><main class="content-overlap"><section class="card report-filter"><label class="field">Select Semester <select id="result-semester">${state.results.map(item => `<option value="${item.semester}" ${Number(item.semester)===Number(selectedResultSemester)?'selected':''}>Semester ${item.semester}</option>`).join('')}</select></label><label class="field">Select Session <select><option>${escapeHtml(result.session)}</option><option>Regular</option></select></label></section><section class="card result-card"><div class="result-heading"><span><small>Semester ${result.semester}</small><h2>${escapeHtml(result.status)}</h2></span><span class="result-score"><small>CGPA</small><b>${escapeHtml(result.cgpa || '—')}</b></span></div><div class="result-meta"><span>SGPA <b>${escapeHtml(result.sgpa || '—')}</b></span><span>Session <b>${escapeHtml(result.session)}</b></span></div><div class="result-table-wrap"><table class="result-table"><thead><tr><th>Course code</th><th>Course name</th><th>Credit</th><th>Grade</th></tr></thead><tbody>${courses}</tbody></table></div><div class="result-actions"><button class="secondary" data-action="edit-result" data-result-sem="${result.semester}">Edit result</button><button class="primary" data-action="download-result" data-result-sem="${result.semester}">↓ Download result</button></div></section><section class="semester-downloads"><h3>Download any semester</h3>${state.results.map(item => `<button data-action="download-result" data-result-sem="${item.semester}">Semester ${item.semester}<span>↓</span></button>`).join('')}</section></main>${bottomNav()}</section>`;
+ return `<section class="shell report-screen">${topbar('Report Card',{light:true})}<section class="hero-blue"><h1>Grade Card List</h1></section><main class="content-overlap"><section class="card report-filter"><label class="field">Select Semester <select id="result-semester">${state.results.map(item => `<option value="${item.semester}" ${Number(item.semester)===Number(selectedResultSemester)?'selected':''}>Semester ${item.semester}</option>`).join('')}</select></label><label class="field">Select Session <select><option>${escapeHtml(result.session)}</option><option>Regular</option></select></label></section><section class="card result-card"><div class="result-heading"><span><small>Semester ${result.semester}</small><h2 class="${published ? '' : 'not-published'}">${escapeHtml(result.status)}</h2></span><span class="result-score"><small>CGPA</small><b>${escapeHtml(result.cgpa || '—')}</b></span></div><div class="result-meta"><span>SGPA <b>${escapeHtml(result.sgpa || '—')}</b></span><span>Session <b>${escapeHtml(result.session)}</b></span></div><div class="result-table-wrap"><table class="result-table"><thead><tr><th>Course code</th><th>Course name</th><th>Credit</th><th>Grade</th></tr></thead><tbody>${courses}</tbody></table></div><div class="result-actions"><button class="secondary" data-action="edit-result" data-result-sem="${result.semester}">Edit result</button>${published ? `<button class="primary" data-action="download-result" data-result-sem="${result.semester}">↓ Download result</button>` : ''}</div></section><section class="semester-downloads"><h3>Download published semesters</h3>${state.results.filter(item => item.status !== 'NOT PUBLISHED').map(item => `<button data-action="download-result" data-result-sem="${item.semester}">Semester ${item.semester}<span>↓</span></button>`).join('')}</section></main>${bottomNav()}</section>`;
 }
 function profilePage() {
  const rows = [['Personal Info','Father name, Mother name, Email, DOB, Nationality, Phone, Gender, Religion'],['University Information','Admission, Application, Semester, Division, Class'],['Address','Local / Present Address, Permanent Address, City, State, Pincode, Country'],['Update ABC ID','Update ABC ID'],['Upload Documents','Upload Documents']];
