@@ -5,6 +5,27 @@ const picker = $('#media-picker');
 const PROFILE_SEED_REVISION = 3;
 const RESULTS_SEED_REVISION = 4;
 const FEES_SEED_REVISION = 4;
+const TIMETABLE_SEED_REVISION = 5;
+const RECEIPTS_SEED_REVISION = 6;
+const SUNDAY_CLASSES = [
+  { start: '12:50', end: '13:40', subject: 'Research Methodology and IPR (PP)', code: 'R1UC701T', teacher: 'Mandeep' },
+  { start: '13:45', end: '14:35', subject: 'Research Methodology and IPR (PP)', code: 'R1UC701T', teacher: 'Mandeep' },
+  { start: '14:35', end: '15:25', subject: 'Generative and Explainable AI (PP)', code: 'R1UD702B', teacher: 'Chouhan Mahesh Kumar' },
+  { start: '15:30', end: '16:20', subject: 'Generative and Explainable AI (PP)', code: 'R1UD702B', teacher: 'Chouhan Mahesh Kumar' },
+  { start: '16:20', end: '17:10', subject: 'Generative and Explainable AI (PP)', code: 'R1UD702B', teacher: 'Chouhan Mahesh Kumar' }
+];
+
+function buildTimetable() {
+  const classes = [];
+  const endDate = new Date(2027, 0, 31, 12); // 31 January 2027
+  for (let date = new Date(2026, 8, 13, 12); date <= endDate; date.setDate(date.getDate() + 7)) {
+    const sunday = dateKey(date);
+    SUNDAY_CLASSES.forEach(item => classes.push({ date: sunday, ...item }));
+    const monday = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1, 12);
+    if (monday <= endDate) SUNDAY_CLASSES.slice(0, 2).forEach(item => classes.push({ date: dateKey(monday), ...item }));
+  }
+  return classes;
+}
 const ARYAN_PROFILE = {
   name: 'ARYAN THAKUR', roll: '23131010559', admission: '23SCSE1012155', section: 'Section-24', email: 'aryanthakur15708@gmail.com',
   father: 'SANTOSH THAKUR', mother: 'JYOTI THAKUR', dob: '17 March 2006', phone: '7011408281',
@@ -25,16 +46,18 @@ const DEFAULT = {
     { title: 'Generative and Explainable AI', code: 'R1UD702B', type: 'PR', attended: 2, delivered: 7 },
     { title: 'Internship Mooc NPTEL', code: 'R1UR701R', type: 'PR', attended: 0, delivered: 0 }
   ],
-  timetable: [
-    { date: '2026-09-13', start: '12:50', end: '13:40', subject: 'Research Methodology and IPR (PP)', code: 'R1UC701T', teacher: 'Mandeep' },
-    { date: '2026-09-13', start: '13:45', end: '14:35', subject: 'Research Methodology and IPR (PP)', code: 'R1UC701T', teacher: 'Mandeep' },
-    { date: '2026-09-13', start: '14:35', end: '15:25', subject: 'Generative and Explainable AI (PP)', code: 'R1UD702B', teacher: 'Chouhan Mahesh Kumar' },
-    { date: '2026-09-13', start: '15:30', end: '16:20', subject: 'Generative and Explainable AI (PP)', code: 'R1UD702B', teacher: 'Chouhan Mahesh Kumar' },
-    { date: '2026-09-13', start: '16:20', end: '17:10', subject: 'Generative and Explainable AI (PP)', code: 'R1UD702B', teacher: 'Chouhan Mahesh Kumar' }
-  ],
+  timetableRevision: TIMETABLE_SEED_REVISION,
+  timetable: buildTimetable(),
   // The account is settled; the individual heads remain available in the editable UI.
   fees: { tuition: 149000, exam: 15000, paid: 164000, seedRevision: FEES_SEED_REVISION },
-  receipts: [],
+  receiptRevision: RECEIPTS_SEED_REVISION,
+  receipts: [{
+    number: '2026-2027/GU//13419', date: '11/09/2026', amount: 164000,
+    session: '2026-2027', academicYear: '2023-2024', semester: 'Sem VII',
+    programme: 'Bachelor of Technology in Computer Science and Engineering',
+    category: 'SCHOOL OF COMPUTING SCIENCE & ENGINEERING', mode: 'ONLINE',
+    transactionId: '177549221464512711'
+  }],
   resultsRevision: RESULTS_SEED_REVISION,
   results: [
     { semester: 1, session: 'Regular', sgpa: '8.39', cgpa: '8.39', status: 'PASS', courses: [{code:'C1UB120T',name:'Environmental Impact Analysis',credit:'0',grade:'A'}, {code:'C1UC122B',name:'Engineering Mathematics-I',credit:'4',grade:'A'}, {code:'C1UD124B',name:'Semiconductor and Optoelectronic Devices',credit:'4',grade:'A'}, {code:'E2UC102C',name:'Programming for Problem Solving',credit:'4',grade:'A+'}, {code:'G2UC101B',name:'Introduction of Digital System',credit:'3',grade:'A'}, {code:'O1UA104B',name:'Communication Skills for Engineers',credit:'3',grade:'A+'}] },
@@ -67,13 +90,14 @@ function loadState() {
   } catch { return structuredClone(DEFAULT); }
 }
 function mergeDefaults(saved) {
- const savedClasses = saved.timetable || DEFAULT.timetable;
+ const savedClasses = (saved.timetableRevision || 0) < TIMETABLE_SEED_REVISION ? DEFAULT.timetable : (saved.timetable || DEFAULT.timetable);
  const profile = { ...DEFAULT.profile, ...(saved.profile || {}) };
  if ((profile.seedRevision || 0) < PROFILE_SEED_REVISION) Object.assign(profile, ARYAN_PROFILE);
  const fees = { ...DEFAULT.fees, ...(saved.fees || {}) };
  if ((fees.seedRevision || 0) < FEES_SEED_REVISION) Object.assign(fees, structuredClone(DEFAULT.fees));
  const results = (saved.resultsRevision || 0) < RESULTS_SEED_REVISION ? structuredClone(DEFAULT.results) : (saved.results || structuredClone(DEFAULT.results));
- return { ...structuredClone(DEFAULT), ...saved, profile, fees, receipts: saved.receipts || [], resultsRevision: RESULTS_SEED_REVISION, results, records: { ...DEFAULT.records, ...(saved.records || {}) }, timetable: savedClasses.map(item => ({ ...item, date: item.date || '2026-09-13' })) };
+ const receipts = (saved.receiptRevision || 0) < RECEIPTS_SEED_REVISION ? structuredClone(DEFAULT.receipts) : (saved.receipts || []);
+ return { ...structuredClone(DEFAULT), ...saved, profile, fees, receipts, receiptRevision: RECEIPTS_SEED_REVISION, resultsRevision: RESULTS_SEED_REVISION, results, records: { ...DEFAULT.records, ...(saved.records || {}) }, timetableRevision: TIMETABLE_SEED_REVISION, timetable: savedClasses.map(item => ({ ...item, date: item.date || '2026-09-13' })) };
 }
 function save() { localStorage.setItem('ems-demo-data', JSON.stringify(state)); }
 function escapeHtml(value = '') { return String(value).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#039;', '"':'&quot;' }[c])); }
@@ -180,8 +204,11 @@ function timetablePage() {
 function feesPage() {
  const heads = ['All Fees','Academic Fees','Hostel Fees','Transport Fees','Miscellaneous Fees'];
  const total = Object.values(state.fees).filter(v=>typeof v === 'number').reduce((a,b)=>a+b,0) - (state.fees.paid || 0) - (state.fees.tuition || 0) - (state.fees.exam || 0); // misc zero
- const outstanding = Math.max(0, state.fees.tuition + state.fees.exam - state.fees.paid);
- return `<section class="shell">${topbar('Fees')}<section class="hero-blue"><h1 style="font-size:25px">Fees</h1><p style="margin:6px 0 0;font-size:19px;font-weight:800">My Fees</p></section><main class="content-overlap"><section class="card identity-card"><div class="identity-head">${avatar('small-avatar')}<div><h2>${escapeHtml(state.profile.name)}</h2><p>Admission No.</p><strong>${escapeHtml(state.profile.admission)}</strong><p>Class</p><strong>${escapeHtml(state.profile.className)}</strong></div></div><div class="info-rows"><div><p>Division</p><strong>${escapeHtml(state.profile.section)}</strong></div><div><p>Roll No.</p><strong>${escapeHtml(state.profile.roll)}</strong></div><div><p>PRN</p><strong>${escapeHtml(state.profile.roll)}</strong></div></div><div class="programme"><p>Programme</p><strong>${escapeHtml(state.profile.programme)}</strong><p style="margin-top:19px">Application No.</p><strong>${escapeHtml(state.profile.application)} <span style="font-size:13px;color:#666">(This is a preadmission application No)</span></strong></div></section><div class="fee-menu">${heads.map(n=>`<button class="fee-head ${activeFee===n?'active':''}" data-fee="${n}"><span>${icon(n)}</span>${n}${n==='All Fees'?'<small style="display:block;color:#6e7278;margin-top:4px">(Incld. Misc)</small>':''}</button>`).join('')}</div><section class="card outstanding"><span>Total Outstanding Amount</span><strong>${money(outstanding)}</strong></section><div class="fee-summary">${[['Academic',outstanding],['Academic Miscellaneous',0],['Hostel',0],['Hostel Miscellaneous',0],['Transport',0],['Transport Miscellaneous',0]].map(([l,v])=>`<section class="card">${l}<strong>${money(v)}</strong></section>`).join('')}</div></main>${bottomNav()}</section>`;
+ // The requested account balance is shown as settled even if an older localStorage record exists.
+ const outstanding = 0;
+ const receipt = state.receipts[0];
+ const receiptCard = receipt ? `<section class="card receipt-preview"><div><small>Latest fee receipt</small><strong>${escapeHtml(receipt.number)}</strong><span>Paid ${escapeHtml(receipt.date)} · ${money(receipt.amount)}</span></div><button class="secondary" data-action="download-receipt" data-receipt-index="0">↓ Download</button></section>` : '';
+ return `<section class="shell">${topbar('Fees')}<section class="hero-blue"><h1 style="font-size:25px">Fees</h1><p style="margin:6px 0 0;font-size:19px;font-weight:800">My Fees</p></section><main class="content-overlap"><section class="card identity-card"><div class="identity-head">${avatar('small-avatar')}<div><h2>${escapeHtml(state.profile.name)}</h2><p>Admission No.</p><strong>${escapeHtml(state.profile.admission)}</strong><p>Class</p><strong>${escapeHtml(state.profile.className)}</strong></div></div><div class="info-rows"><div><p>Division</p><strong>${escapeHtml(state.profile.section)}</strong></div><div><p>Roll No.</p><strong>${escapeHtml(state.profile.roll)}</strong></div><div><p>PRN</p><strong>${escapeHtml(state.profile.roll)}</strong></div></div><div class="programme"><p>Programme</p><strong>${escapeHtml(state.profile.programme)}</strong><p style="margin-top:19px">Application No.</p><strong>${escapeHtml(state.profile.application)} <span style="font-size:13px;color:#666">(This is a preadmission application No)</span></strong></div></section><div class="fee-menu">${heads.map(n=>`<button class="fee-head ${activeFee===n?'active':''}" data-fee="${n}"><span>${icon(n)}</span>${n}${n==='All Fees'?'<small style="display:block;color:#6e7278;margin-top:4px">(Incld. Misc)</small>':''}</button>`).join('')}</div><section class="card outstanding"><span>Total Outstanding Amount</span><strong>${money(outstanding)}</strong></section><div class="fee-summary">${[['Academic',outstanding],['Academic Miscellaneous',0],['Hostel',0],['Hostel Miscellaneous',0],['Transport',0],['Transport Miscellaneous',0]].map(([l,v])=>`<section class="card">${l}<strong>${money(v)}</strong></section>`).join('')}</div>${receiptCard}</main>${bottomNav()}</section>`;
 }
 function academicFeesPage() {
  const total = state.fees.tuition + state.fees.exam;
@@ -239,7 +266,14 @@ function downloadPdf(filename, title, lines) {
 }
 function downloadReceipt(index) {
  const receipt = state.receipts[index]; if (!receipt) return;
- downloadPdf(`${receipt.number}.pdf`, 'FEE PAYMENT RECEIPT', [`Receipt number: ${receipt.number}`, `Student name: ${state.profile.name}`, `Roll number: ${state.profile.roll}`, `Class: ${state.profile.className}`, `Payment date: ${receipt.date}`, `Amount paid: INR ${Number(receipt.amount).toLocaleString('en-IN')}`, '', 'This is a locally generated project-demo receipt.']); toast('Fee receipt downloaded as PDF.');
+ const amount = Number(receipt.amount).toLocaleString('en-IN', {minimumFractionDigits: 2});
+ downloadPdf(`fee-receipt-${String(receipt.number).replace(/[^a-z0-9]/gi, '-')}.pdf`, 'FEE RECEIPT - STUDENT COPY', [
+   `Receipt No.: ${receipt.number}`, `Deposit date: ${receipt.date}`, `Payment mode: ${receipt.mode || 'ONLINE'}`, `Transaction reference: ${receipt.transactionId || 'Not provided'}`, '',
+   `Student name: ${state.profile.name}`, `Father's name: ${state.profile.father}`, `Mother's name: ${state.profile.mother}`, `Admission No.: ${state.profile.admission}`, `Roll No.: ${state.profile.roll}`,
+   `Programme: ${receipt.programme || state.profile.programme}`, `Fee category: ${receipt.category || 'Academic Fees'}`, `Session: ${receipt.session || '2026-2027'}`, `Academic year: ${receipt.academicYear || '2023-2024'}`, `Semester: ${receipt.semester || 'Sem VII'}`, '',
+   'PARTICULARS                                      RECEIVED (Rs.)', `TUITION FEE                                      ${Number(state.fees.tuition).toFixed(2)}`, `EXAM FEE                                          ${Number(state.fees.exam).toFixed(2)}`, `TOTAL                                             ${amount}`, '',
+   `We thankfully acknowledge receipt of Rs. ${amount}.`, 'This is a computer-generated project-demo receipt; no signature is required.'
+ ]); toast('Fee receipt downloaded as PDF.');
 }
 function downloadResult(semester) {
  const result = state.results.find(item => Number(item.semester) === Number(semester)); if (!result) return;
